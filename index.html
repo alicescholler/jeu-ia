@@ -4,26 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cat Image</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Delius&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e7dfde;
+            font-family: 'Delius', cursive;
+        }
+        input, button {
+            font-family: 'Delius', cursive;
+        }
+        #loading {
+            width: 80px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Here is a cute cat!</h1>
     <img src="cute-cat-1.png" alt="Cute cat">
-    <h2>AI Generated Response</h2>
+    <h2>What do you want?</h2>
     <input type="text" id="userInput" placeholder="Enter your message">
-    <button onclick="displayResponse()">Send</button>
+    <button id="sendButton" onclick="displayResponse()">Send</button>
     <div id="response"></div>
+    <img id="loading" src="loading-cat.gif" alt="Loading...">
 
     <script src="config.js"></script>
     <script src="openai.js"></script>
     <script>
         async function displayResponse() {
             const userInput = document.getElementById('userInput').value;
-            const response = await fetchAIResponse(userInput);
-            document.getElementById('response').innerText = response;
+            const sendButton = document.getElementById('sendButton');
+            const loading = document.getElementById('loading');
+            const responseDiv = document.getElementById('response');
+
+            // Disable the send button and show the loading GIF
+            sendButton.disabled = true;
+            loading.style.display = 'block';
+            responseDiv.innerText = '';
+
+            try {
+                const response = await fetchAIResponse(userInput);
+                // Ensure the loading GIF is displayed for at least 3 seconds
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                responseDiv.innerText = response;
+            } catch (error) {
+                responseDiv.innerText = 'Error: ' + error.message;
+            } finally {
+                // Re-enable the send button and hide the loading GIF
+                sendButton.disabled = false;
+                loading.style.display = 'none';
+            }
         }
 
         document.getElementById('userInput').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && !document.getElementById('sendButton').disabled) {
                 displayResponse();
             }
         });

@@ -10,6 +10,7 @@ async function fetchAIResponse(message) {
             store: true,
             messages: [
                 { role: "system", content: "You are a grumpy cat. Respond to all messages in a grumpy and sarcastic but funny manner." },
+                { role: "assistant", content: "What do you want?" },
                 { role: "user", content: message }
             ]
         })
