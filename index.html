@@ -42,11 +42,47 @@
             display: none;
         }
         .message {
-            text-align: left;
+            max-width: 80%;
+            min-width: 20px;
+            padding: 10px;
             margin: 5px 0;
+            border-radius: 10px;
+            display: inline-block;
+            position: relative;
         }
         .message.user {
-            text-align: right;
+            background-color: hsl(7 16% 83% / 1);
+            align-self: flex-end;
+        }
+        .message.user::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            background: hsl(7 16% 83% / 1);
+            clip-path: path('M16 0Q11 6 20 13 2 13 0 0');
+        }
+        .message.assistant {
+            background-color: hsl(7 16% 93% / 1);
+            align-self: flex-start;
+        }
+        .message.assistant::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            background: hsl(7 16% 93% / 1);
+            clip-path: path('M 4 0 Q 9 6 0 13 Q 18 13 20 0');
+        }
+        #chat {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
         }
     </style>
 </head>
@@ -88,12 +124,12 @@
 
                 // Add AI response to chat
                 const aiMessageDiv = document.createElement('div');
-                aiMessageDiv.className = 'message';
+                aiMessageDiv.className = 'message assistant';
                 aiMessageDiv.innerText = response;
                 chat.appendChild(aiMessageDiv);
             } catch (error) {
                 const errorMessageDiv = document.createElement('div');
-                errorMessageDiv.className = 'message';
+                errorMessageDiv.className = 'message assistant';
                 errorMessageDiv.innerText = 'Error: ' + error.message;
                 chat.appendChild(errorMessageDiv);
             } finally {
@@ -101,6 +137,7 @@
                 sendButton.disabled = false;
                 loading.style.display = 'none';
                 document.getElementById('userInput').value = '';
+                chat.scrollTop = chat.scrollHeight; // Scroll to the bottom
             }
         }
 
