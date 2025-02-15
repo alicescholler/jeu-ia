@@ -11,23 +11,58 @@
         body {
             background-color: #e7dfde;
             font-family: 'Delius', cursive;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-        input, button {
+        .container {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        input {
             font-family: 'Delius', cursive;
+            width: 70%;
+            margin: 10px 0;
+        }
+        button {
+            font-family: 'Delius', cursive;
+            width: 25%;
+            margin: 10px 0;
         }
         #loading {
             width: 80px;
             display: none;
         }
+        .message {
+            text-align: left;
+            margin: 5px 0;
+        }
+        .message.user {
+            text-align: right;
+        }
     </style>
 </head>
 <body>
-    <img src="cute-cat-1.png" alt="Cute cat">
-    <h2>What do you want?</h2>
-    <input type="text" id="userInput" placeholder="Enter your message">
-    <button id="sendButton" onclick="displayResponse()">Send</button>
-    <div id="response"></div>
-    <img id="loading" src="loading-cat.gif" alt="Loading...">
+    <div class="container">
+        <img src="cute-cat-1.png" alt="Cute cat">
+        <h2>What do you want?</h2>
+        <div id="chat">
+            <!-- Messages will be appended here -->
+        </div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Enter your message">
+            <button id="sendButton" onclick="displayResponse()">Send</button>
+        </div>
+        <img id="loading" src="loading-cat.gif" alt="Loading...">
+    </div>
 
     <script src="config.js"></script>
     <script src="openai.js"></script>
@@ -36,24 +71,36 @@
             const userInput = document.getElementById('userInput').value;
             const sendButton = document.getElementById('sendButton');
             const loading = document.getElementById('loading');
-            const responseDiv = document.getElementById('response');
+            const chat = document.getElementById('chat');
 
             // Disable the send button and show the loading GIF
             sendButton.disabled = true;
             loading.style.display = 'block';
-            responseDiv.innerText = '';
+
+            // Add user message to chat
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user';
+            userMessageDiv.innerText = userInput;
+            chat.appendChild(userMessageDiv);
 
             try {
                 const response = await fetchAIResponse(userInput);
-                // Ensure the loading GIF is displayed for at least 3 seconds
-                await new Promise(resolve => setTimeout(resolve, 3000));
-                responseDiv.innerText = response;
+
+                // Add AI response to chat
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'message';
+                aiMessageDiv.innerText = response;
+                chat.appendChild(aiMessageDiv);
             } catch (error) {
-                responseDiv.innerText = 'Error: ' + error.message;
+                const errorMessageDiv = document.createElement('div');
+                errorMessageDiv.className = 'message';
+                errorMessageDiv.innerText = 'Error: ' + error.message;
+                chat.appendChild(errorMessageDiv);
             } finally {
                 // Re-enable the send button and hide the loading GIF
                 sendButton.disabled = false;
                 loading.style.display = 'none';
+                document.getElementById('userInput').value = '';
             }
         }
 
